@@ -1,0 +1,19 @@
+#wmq-quiz-form div input[type="text"] {
+    width: 400px;
+}
+
+#wmq-quiz-form div label {
+    width: 200px;
+}
+
+#wmq-quiz-form div input[type="color"] {
+    width: 50px;
+}
+
+#wmq-quiz-form div input[type="submit"] {
+    width: 120px;
+}
+
+#wmq-quiz-form div input[type="number"] {
+    width: 120px;
+}
