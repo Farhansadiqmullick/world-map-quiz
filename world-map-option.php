@@ -39,7 +39,7 @@ class WORLD_MAP_QUIZ
         //page templates
         add_filter('theme_page_templates', array($this, 'wmq_page_template_to_dropdown'));
         add_filter('template_include', array($this, 'wmq_change_page_template'), 99);
-        $this->tabvalues = ['content', 'color'];
+        $this->tabvalues = ['content', 'color', 'others'];
         $this->getOptionvalues = get_option('wmq_get_values');
         $this->getKeys = 8;
     }
@@ -109,8 +109,9 @@ class WORLD_MAP_QUIZ
         $capability = 'manage_options';
         $slug = 'wmq';
         $callback = array($this, 'wmq_settings_content');
+        $icon = WMQ_DIR_URL.'images/world_map.png';
 
-        add_menu_page($page_title, $menu_title, $capability, $slug, $callback);
+        add_menu_page($page_title, $menu_title, $capability, $slug, $callback, $icon);
     }
 
 
@@ -170,7 +171,7 @@ class WORLD_MAP_QUIZ
                 'placeholder' => __('Heading Title', 'wmq'),
                 'task'     => 'heading',
                 'id'          => 'wmq_heading',
-                'value' => isset($values['heading']) ? $values['heading'] : '',
+                'value' => isset($values['heading']) ? $values['heading'] : 'Heading Title of the World Map',
             ),
             array(
                 'label'       => __('Sub Heading', 'wmq'),
@@ -179,7 +180,7 @@ class WORLD_MAP_QUIZ
                 'placeholder' => __('Sub Heading ', 'wmq'),
                 'task'     => 'subheading',
                 'id'          => 'wmq_subheading',
-                'value' => isset($values['subheading']) ? $values['subheading'] : '',
+                'value' => isset($values['subheading']) ? $values['subheading'] : 'Sub Heading of the World Map',
             ),
             array(
                 'label'       => __('Quiz Time', 'wmq'),
@@ -291,6 +292,22 @@ class WORLD_MAP_QUIZ
                 'task'     => 'hover_country_color',
                 'id'          => 'hover_country_color',
                 'value' => isset($values['hover_country_color']) ? $values['hover_country_color'] : '#dedede',
+            ),
+            array(
+                'label'       => __('All Answer Color', 'wmq'),
+                'type'        => 'color',
+                'name'     => 'wmq_all_answer',
+                'task'     => 'wmq_all_answer',
+                'id'          => 'wmq_all_answer',
+                'value' => isset($values['wmq_all_answer']) ? $values['wmq_all_answer'] : '#f44336',
+            ),
+            array(
+                'label'       => __('Correct Answer Color', 'wmq'),
+                'type'        => 'color',
+                'name'     => 'wmq_correct_answer',
+                'task'     => 'wmq_correct_answer',
+                'id'          => 'wmq_correct_answer',
+                'value' => isset($values['wmq_correct_answer']) ? $values['wmq_correct_answer'] : '#0000ff',
             ),
         );
 

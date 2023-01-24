@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Template Name: World Map Template
+ * Template Post Type: page, post
+ */
+
 namespace WMQ\src\templates;
 
 
@@ -48,7 +53,7 @@ HEREDOC;
                             </div>
                         </div>
                         <span id="starttyping">
-                            <input class="form-control" onkeyup="calc1()" placeholder="type answers here" autofocus type="text" autocomplete="off" id="guess" name="guess" />
+                            <input class="form-control" onkeyup="calc1()" data-correct="{$this->getOptionvalues['wmq_correct_answer']}" data-allanswer="{$this->getOptionvalues['wmq_all_answer']}" placeholder="type answers here" autofocus type="text" autocomplete="off" id="guess" name="guess" />
                         </span>
                         <div class="input-group-append">
                             <input onClick="showallanswers()" class="btn btn-danger" id="showanswersbutton" type="button" value="{$this->getOptionvalues['wmq_give_up_title']}" style="margin-left: 10px" />

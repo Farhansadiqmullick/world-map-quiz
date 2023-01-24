@@ -132,13 +132,14 @@
           //it will go for country validation and do necessary adjustment if the country value is correct
           tryWorldGuess(answer);
         }
-        //alert(answer);
+        var AnswerColor = document.querySelector('.form-control');
+        var correctAnswerColor = AnswerColor.dataset.correct;
 
         correctanswer[i] = "correct";
         //for starting with blank
         document.getElementById("show" + i).style.display = "";
         //correct Answer got blue
-        document.getElementById("show" + i).style.color = "blue";
+        document.getElementById("show" + i).style.color = correctAnswerColor;
         document.getElementById("guess" + i).style.display = "none";
 
         document.getElementById("guess").value = "";

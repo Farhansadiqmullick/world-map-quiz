@@ -79,6 +79,8 @@
   var score = 0;
 
   showallanswers = function () {
+    var allAnswerColor =
+      document.querySelector(".form-control").dataset.allanswer;
     document.getElementById("reloadpage").style.display = "";
     document.getElementById("starttyping").style.display = "none";
     document.getElementById("showanswersbutton").style.display = "none";
@@ -86,6 +88,7 @@
     for (n = 1; n <= guesses; n++) {
       //display '' means for making display:none it will not be seen
       document.getElementById("show" + n).style.display = "";
+      document.getElementById("show" + n).style.color = allAnswerColor;
     }
     stopTimer = 1;
   };
@@ -115,7 +118,7 @@
       correctanswer[i] = "notcorrect";
       document.getElementById("guess" + i).style.display = "";
       document.getElementById("show" + i).style.display = "none";
-      document.getElementById("show" + i).style.color = "red";
+      document.getElementById("show" + i).style.color = "";
     }
 
     document.getElementById("notimer").style.display = "";

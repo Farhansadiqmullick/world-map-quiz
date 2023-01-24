@@ -16,7 +16,7 @@ class Helpers
         foreach ($countries as $index => $country) :
 
             $values .= sprintf('%s<td>
-    <span style="color: red; display: none" id="show%d">%s</span> <span type="text" id="guess%d" name="guess%d"> </span>
+    <span style="display: none;" id="show%d">%s</span> <span type="text" id="guess%d" name="guess%d"> </span>
 </td> <input type="hidden" id="answer%d" name="answer%d" value="%s" />%s', ($index + 1) % 5 == 0 ? '<tr>' : '', ++$index, $country, $index, $index, $index, $index, $country, ($index + 1) % 5 == 0 ? '<tr>' : '');
 
         endforeach;
