@@ -100,7 +100,6 @@ HEREDOC;
     </tr>
 </table>
 </div>
-
 <br />
 HEREDOC;
 

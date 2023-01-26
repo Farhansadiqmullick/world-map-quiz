@@ -18,7 +18,9 @@ class QUIZ
         $mapContent = new MapContent();
         $optionValues = get_option('wmq_get_values');
         if ($optionValues) {
+            echo '<div class="world-map-quiz-container">';
             printf('%s %s %s %s', $mapContent->getHeadingContent(), $mapContent->getBodyContent(), $mapContent->tableContent(), $this->name_details());
+            echo '</div>';
         }
         get_footer();
     }

@@ -5,11 +5,11 @@ Plugin URI:
 Description: World Map Quiz
 Version: 1.0
 Author: WPPOOL
-Author URI: 
 License: GPLv2 or later
 Text Domain: wmq
 Domain Path: /languages/
 */
+namespace WMQ;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -19,8 +19,7 @@ use WMQ\src\QUIZ;
 use WMQ\src\Helpers;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
-
-class WORLD_MAP_QUIZ
+class WorldMapQuiz
 {
     protected $tabvalues;
     protected $getOptionvalues;
@@ -30,6 +29,7 @@ class WORLD_MAP_QUIZ
     {
         add_action('admin_menu', array($this, 'wmq_create_settings'));
         add_action('wp_enqueue_scripts', array($this, 'wmq_frontend_assets'));
+        add_action('wp_enqueue_scripts', array($this, 'wmq_remove_default_style'));
         add_action('admin_enqueue_scripts', array($this, 'wmq_admin_assets'));
         add_action('wp_ajax_wmq_quiz', array($this, 'wmq_get_options_value'));
         add_action('plugins_loaded', array($this, 'wmq_bootstrap'));
@@ -109,7 +109,7 @@ class WORLD_MAP_QUIZ
         $capability = 'manage_options';
         $slug = 'wmq';
         $callback = array($this, 'wmq_settings_content');
-        $icon = WMQ_DIR_URL.'images/world_map.png';
+        $icon = WMQ_DIR_URL . 'images/world_map.png';
 
         add_menu_page($page_title, $menu_title, $capability, $slug, $callback, $icon);
     }
@@ -128,10 +128,24 @@ class WORLD_MAP_QUIZ
             }
             $getvalueArray = array_combine($getKey, $getValue);
             update_option('wmq_get_values', $getvalueArray);
-
             die();
         } else {
             return false;
+        }
+    }
+
+    function wmq_remove_default_style()
+    {
+
+        if (is_page_template('world-map-quiz')) {
+            var_dump(is_page_template( 'world-map-quiz' ));
+            die();
+            $theme = wp_get_theme();
+            $parent_style = $theme->stylesheet . '-style';
+
+            wp_dequeue_style($parent_style);
+            wp_deregister_style($parent_style);
+            wp_deregister_style($parent_style . '-css');
         }
     }
 
@@ -171,7 +185,7 @@ class WORLD_MAP_QUIZ
                 'placeholder' => __('Heading Title', 'wmq'),
                 'task'     => 'heading',
                 'id'          => 'wmq_heading',
-                'value' => isset($values['heading']) ? $values['heading'] : 'Heading Title of the World Map',
+                'value' => isset($values['heading']) ? esc_html($values['heading']) : 'Heading Title of the World Map',
             ),
             array(
                 'label'       => __('Sub Heading', 'wmq'),
@@ -180,7 +194,7 @@ class WORLD_MAP_QUIZ
                 'placeholder' => __('Sub Heading ', 'wmq'),
                 'task'     => 'subheading',
                 'id'          => 'wmq_subheading',
-                'value' => isset($values['subheading']) ? $values['subheading'] : 'Sub Heading of the World Map',
+                'value' => isset($values['subheading']) ? esc_html($values['subheading']) : 'Sub Heading of the World Map',
             ),
             array(
                 'label'       => __('Quiz Time', 'wmq'),
@@ -189,7 +203,7 @@ class WORLD_MAP_QUIZ
                 'placeholder' => '720',
                 'task'     => 'quiz_time',
                 'id'          => 'wmq_quiz_time',
-                'value' => isset($values['quiz_time']) ? $values['quiz_time'] : '',
+                'value' => isset($values['quiz_time']) ? esc_attr($values['quiz_time']) : '',
             ),
             array(
                 'label'       => __('Header Nav Title', 'wmq'),
@@ -344,10 +358,9 @@ class WORLD_MAP_QUIZ
 
     function wmq_page_template_to_dropdown($templates)
     {
-        $wmp_template = [];
-        $wmp_template['quiz'] = __('World Map Template', 'wmp');
-
-        $templates = array_merge($templates, $wmp_template);
+        $wmq_template = [];
+        $wmq_template['world-map-quiz'] = __('World Map Template', 'wmp');
+        $templates = array_merge($templates, $wmq_template);
         return $templates;
     }
 
@@ -365,4 +378,4 @@ class WORLD_MAP_QUIZ
     }
 }
 
-new WORLD_MAP_QUIZ();
+new WorldMapQuiz();

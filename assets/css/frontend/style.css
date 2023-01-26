@@ -45,7 +45,7 @@
 }
 
 /*Score Table*/
-#score{
+#score {
     margin-bottom: 20px;
     font-weight: 800;
     border-bottom: 1px solid #ddd;
@@ -54,7 +54,7 @@
     padding: 10px;
 }
 
-#notimer{
+#notimer {
     cursor: pointer;
     font-size: 12px;
     border: 0;
@@ -62,8 +62,17 @@
 }
 
 /*input wrapper*/
-.input-group-prepend{
+.input-group-prepend {
     display: flex;
     flex-direction: row;
 }
 
+
+/*Theme template Style*/
+
+.world-map-quiz-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+}
