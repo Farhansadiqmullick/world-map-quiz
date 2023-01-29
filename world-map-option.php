@@ -45,8 +45,6 @@ class WorldMapQuiz {
 
 	/**
 	 * Constuctor of the class
-	 *
-	 * @function return class constructor
 	 */
 	public function __construct() {
 		add_action('admin_menu', [ $this, 'wmq_create_settings' ]);

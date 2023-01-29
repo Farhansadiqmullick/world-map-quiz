@@ -132,6 +132,11 @@
 	<!-- Squiz.Classes.ClassFileName -->
 	<rule ref="Squiz.Classes.ClassFileName">
 		<exclude name="Squiz.Classes.ClassFileName.NoMatch" />
+	</rule>	
+	
+	<!-- Squiz.MethodScope -->
+	<rule ref="Squiz.Scope.MethodScope">
+		<exclude name="Squiz.Scope.MethodScope.Missing" />
 	</rule>
 	
 	<!-- 
