@@ -52,4 +52,17 @@ class Helpers {
     </div>', $label, $type, $name, $placeholder ? 'placeholder="' . $placeholder . '"' : null, $task, $id, $value);
 		return $content;
 	}
+
+	function wmq_filter_values( $value ) {
+		if ( gettype($value) === 'string' ) {
+			return sanitize_text_field( $value );
+
+		} else if ( gettype($value) === 'number' ) {
+			return filter_var($value, 'FILTER_VALIDATE_INT');
+		} else if ( gettype( $value) === 'boolean' ) {
+			return wp_validate_boolean($value);
+		} else {
+			return false;
+		}
+	}
 }

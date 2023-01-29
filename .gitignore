@@ -8,3 +8,5 @@ wp-coding-standards/
 *.zip
 
 composer.lock
+
+*.vscode

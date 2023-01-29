@@ -12,13 +12,16 @@
 	<!-- Exclusions  -->
     <exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>assets/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>build/*</exclude-pattern>
+    <exclude-pattern>*/languages/*.php</exclude-pattern>
 	<!-- <exclude-pattern>languages/*</exclude-pattern>
 	<exclude-pattern>src/*</exclude-pattern> -->
 
 	<!-- Text-domain -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>-
-			<property name="text_domain" type="array" value="world-map-quiz" />
+			<property name="text_domain" type="array" value="wmq" />
 		</properties>
 	</rule>
 
@@ -155,6 +158,11 @@
 	<rule ref="WordPress.PHP.StrictInArray">
 		<exclude name="WordPress.PHP.StrictInArray.FoundNonStrictFalse" />
 		<exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict" />	
+	</rule>
+
+	<rule ref="WordPress.WP.EnqueuedResourceParameters">
+		<exclude
+      name="WordPress.WP.EnqueuedResourceParameters.MissingVersion" />
 	</rule>
 
 	<!-- 
