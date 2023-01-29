@@ -11,20 +11,12 @@ class ComposerStaticInit4efcdcbe06d4f3e64ca67baa5eff48c7
         array (
             'WMQ\\src\\' => 8,
         ),
-        'P' => 
-        array (
-            'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 57,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'WMQ\\src\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
-        ),
-        'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dealerdirect/phpcodesniffer-composer-installer/src',
         ),
     );
 

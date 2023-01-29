@@ -7,19 +7,16 @@
 
 namespace WMQ\src\templates;
 
+class MapContent {
 
-class MapContent
-{
-     protected $getOptionvalues;
+	 protected $getOptionvalues;
 
-    public function __construct()
-    {
-        $this->getOptionvalues = get_option('wmq_get_values');
-    }
+	public function __construct() {
+		 $this->getOptionvalues = get_option('wmq_get_values');
+	}
 
-    function getHeadingContent()
-    {
-        $content = <<<HEREDOC
+	function getHeadingContent() {
+		$content = <<<HEREDOC
 <nav class="navbar navbar-light justify-content-between" style="background: {$this->getOptionvalues['nav_background_color']}">
 <a class="navbar-brand" href="/" style="color: white; font-weight: 700">
     <img src="" style="height: 28px; margin-right: 5px" />
@@ -28,12 +25,11 @@ class MapContent
 </nav>
 HEREDOC;
 
-        return $content;
-    }
+		return $content;
+	}
 
-    function getBodyContent()
-    {
-        $content = <<<HEREDOC
+	function getBodyContent() {
+		 $content = <<<HEREDOC
 <div class="container" style="margin-bottom: 10px; margin-top: 20px">
 <h3 style="text-align: center">{$this->getOptionvalues['heading']}</h3>
 <div style="text-align: center">{$this->getOptionvalues['subheading']}</div>
@@ -74,13 +70,11 @@ HEREDOC;
 <br />
 HEREDOC;
 
-        return $content;
-    }
+		return $content;
+	}
 
-    function tableContent()
-    {
-
-        $content = <<<HEREDOC
+	function tableContent() {
+		$content = <<<HEREDOC
 <div class="table-responsive">
 <table class="text-center mx-auto">
     <tr>
@@ -103,6 +97,6 @@ HEREDOC;
 <br />
 HEREDOC;
 
-        return $content;
-    }
+		return $content;
+	}
 }

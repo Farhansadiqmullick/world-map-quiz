@@ -5,12 +5,9 @@
     }
   },
   "config": {
-    "disable-tls": true,
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
-    }
+    "disable-tls": true
   },
   "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    "squizlabs/php_codesniffer": "^3.7"
   }
 }
