@@ -1,14 +1,31 @@
 <?php
 
+/**
+ * Quiz Content of The Plugin
+ *
+ * @package Quiz Class
+ */
 namespace WMQ\src;
 
-use WMQ\src\templates\MapContent;
+use WMQ\src\templates\map_content;
 use WMQ\src\Helpers;
 
+/**
+ * Quiz Class Component
+ */
 class QUIZ {
+	/**
+	 * Answer Columns
 
-	static $answerColumn = 5;
-	static $answers = [
+	 * @var string $answer_column
+	 */
+	public static $answer_column = 5;
+	/**
+	 * All the Answers of the Column
+
+	 * @var string $answers
+	 */
+	public static $answers = [
 		'afghanistan',
 		'albania',
 		'algeria',
@@ -206,20 +223,24 @@ class QUIZ {
 		'zambia',
 		'zimbabwe',
 	];
-
+	/**
+	 * Initialize the hook of Quiz
+	 */
 	function quiz_init() {
 		get_header();
-		$mapContent = new MapContent();
-		$optionValues = get_option('wmq_get_values');
-		if ( $optionValues ) {
+		$map_content   = new Map_Content();
+		$option_values = get_option('wmq_get_values');
+		if ( $option_values ) {
 			echo '<div class="world-map-quiz-container">';
-			printf('%s %s %s %s', $mapContent->getHeadingContent(), $mapContent->getBodyContent(), $mapContent->tableContent(), $this->name_details());
+			printf('%s %s %s %s', esc_attr($map_content->get_heading_content()), esc_attr($map_content->get_body_content()), esc_attr($map_content->table_content()), esc_attr($this->name_details()));
 			echo '</div>';
 		}
 		get_footer();
 	}
 
-
+	/**
+	 * Name Details of the Quiz Table
+	 */
 	function name_details() {
 		$helpers = new Helpers();
 		$content = <<<HEREDOC
@@ -228,7 +249,7 @@ class QUIZ {
             <div class="row">
                 <div class="col-md-12">
                     <table class="table table-sm country-table">
-                        {$helpers->getValues(self::$answerColumn)}
+                        {$helpers->getValues(self::$answer_column)}
                         {$helpers->country_names(self::$answers)}
                     </table>
                 </div>

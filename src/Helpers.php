@@ -47,7 +47,7 @@ class Helpers {
 	 */
 	function country_table_head( $column ) {
 		$content = '';
-		$value = sprintf('<td class="answer-col-head">%s</td>', 'Answer');
+		$value   = sprintf('<td class="answer-col-head">%s</td>', 'Answer');
 		for ( $i = 1; $i <= $column; $i++ ) {
 			$content .= sprintf('%s', $value);
 		}
@@ -86,14 +86,14 @@ class Helpers {
 	 * @param string $value type values.
 	 */
 	function get_contents( $label, $type, $name, $placeholder = null, $task, $id, $value ) {
-		 $content = printf('<div class="d-block my-3 ">
+		$content = printf('<div class="d-block my-3 ">
         <label>%s: </label><input type="%s" name="%s" class="wmq-action" %s data-task="%s" id="%s" value="%s">
     </div>', esc_attr($label), esc_attr($type), esc_html($name), $placeholder ? 'placeholder="' . esc_attr($placeholder) . '"' : null, esc_attr($task), esc_attr($id), esc_attr($value));
 		return $content;
 	}
 
 	/**
-	 * Filyer Values According to Table
+	 * Filter Values According to Table
 	 *
 	 * @param string $value type.
 	 */
@@ -101,9 +101,9 @@ class Helpers {
 		if ( gettype($value) === 'string' ) {
 			return sanitize_text_field( $value );
 
-		} else if ( gettype($value) === 'number' ) {
+		} elseif ( gettype($value) === 'number' ) {
 			return filter_var($value, 'FILTER_VALIDATE_INT');
-		} else if ( gettype( $value) === 'boolean' ) {
+		} elseif ( gettype( $value) === 'boolean' ) {
 			return wp_validate_boolean($value);
 		} else {
 			return false;
