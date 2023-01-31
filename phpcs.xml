@@ -170,6 +170,14 @@
       name="WordPress.WP.EnqueuedResourceParameters.MissingVersion" />
 	</rule>
 
+		<!-- Check class Names allowed Uppercase  -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+    <exclude-pattern>/src/_index\.php$</exclude-pattern>
+    <exclude-pattern>/src/wp-admin/_index\.php$</exclude-pattern>
+	<exclude
+      name="WordPress.Files.FileName.NotHyphenatedLowercase" />
+	</rule>
+
 	<!-- 
 		####                     		      ####
 		#### End of WordPress Coding Standard ####

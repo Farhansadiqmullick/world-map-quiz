@@ -7,13 +7,13 @@
  */
 namespace WMQ\src;
 
-use WMQ\src\templates\map_content;
+use WMQ\src\templates\MapContent;
 use WMQ\src\Helpers;
 
 /**
  * Quiz Class Component
  */
-class QUIZ {
+class Quiz {
 	/**
 	 * Answer Columns
 
@@ -223,17 +223,20 @@ class QUIZ {
 		'zambia',
 		'zimbabwe',
 	];
+
 	/**
 	 * Initialize the hook of Quiz
 	 */
 	function quiz_init() {
 		get_header();
-		$map_content   = new Map_Content();
+		$map_content   = new MapContent();
 		$option_values = get_option('wmq_get_values');
 		if ( $option_values ) {
 			echo '<div class="world-map-quiz-container">';
-			printf('%s %s %s %s', esc_attr($map_content->get_heading_content()), esc_attr($map_content->get_body_content()), esc_attr($map_content->table_content()), esc_attr($this->name_details()));
+			//phpcs:ignore
+			printf('%s %s %s %s', $map_content->get_heading_content(), $map_content->get_body_content(), $map_content->table_content(), $this->name_details());
 			echo '</div>';
+			die();
 		}
 		get_footer();
 	}
@@ -249,7 +252,7 @@ class QUIZ {
             <div class="row">
                 <div class="col-md-12">
                     <table class="table table-sm country-table">
-                        {$helpers->getValues(self::$answer_column)}
+                        {$helpers->get_values(self::$answer_column)}
                         {$helpers->country_names(self::$answers)}
                     </table>
                 </div>

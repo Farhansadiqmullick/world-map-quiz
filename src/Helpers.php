@@ -98,7 +98,22 @@ class Helpers {
 	 * @param string $value type.
 	 */
 	function wmq_filter_values( $value ) {
-		if ( gettype($value) === 'string' ) {
+		if ( gettype($value) === 'array' ) {
+			$value_array = [];
+			foreach ( $value as $key => $val ) {
+				if ( gettype($val) === 'string' ) {
+					$value_array[ $key ] = sanitize_text_field( $val );
+				} elseif ( gettype($val) === 'number' ) {
+					$value_array[ $key ] = filter_var($val, 'FILTER_VALIDATE_INT');
+				} elseif ( gettype( $val) === 'boolean' ) {
+					$value_array[ $key ] = wp_validate_boolean($val);
+				} else {
+					return false;
+				}
+			}
+				 return $value_array;
+		} elseif ( gettype($value) === 'string' ) {
+			var_dump(gettype($value));
 			return sanitize_text_field( $value );
 
 		} elseif ( gettype($value) === 'number' ) {

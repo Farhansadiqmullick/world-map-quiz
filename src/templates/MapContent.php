@@ -10,6 +10,8 @@
 
 namespace WMQ\src\templates;
 
+use WMQ\src\Helpers;
+
 /**
  * Map Class Component
  */
@@ -19,21 +21,29 @@ class MapContent {
 
 	 * @var string $get_option_values
 	 * */protected $get_option_values;
+
+	 /**
+	  * Variables for getting option values
+
+	  * @var string $get_option_values
+	  * */protected $options;
 	/**
 	 * Constuctor of the Map Content
 	 */
 	public function __construct() {
 		$this->get_option_values = get_option('wmq_get_values');
+		$filter = new Helpers();
+		$this->options = $filter->wmq_filter_values($this->get_option_values);
 	}
 	/**
 	 * Heading Content of the Table
 	 */
 	function get_heading_content() {
 		$content = <<<HEREDOC
-<nav class="navbar navbar-light justify-content-between" style="background: {($this->get_option_values['nav_background_color']}">
+<nav class="navbar navbar-light justify-content-between" style="background: {$this->options['nav_background_color']}">
 <a class="navbar-brand" href="/" style="color: white; font-weight: 700">
     <img src="" style="height: 28px; margin-right: 5px" />
-    {$this->get_option_values['header_nav_title']} <span style="color: {$this->get_option_values['header_span_color']}">{$this->get_option_values['header_span_title']}</span>
+    {$this->options['header_nav_title']} <span style="color: {$this->options['header_span_color']}">{$this->options['header_span_title']}</span>
 </a>
 </nav>
 HEREDOC;
@@ -46,8 +56,8 @@ HEREDOC;
 	function get_body_content() {
 		$content = <<<HEREDOC
 <div class="container" style="margin-bottom: 10px; margin-top: 20px">
-<h3 style="text-align: center">{$this->get_option_values['heading']}</h3>
-<div style="text-align: center">{$this->get_option_values['subheading']}</div>
+<h3 style="text-align: center">{$this->options['heading']}</h3>
+<div style="text-align: center">{$this->options['subheading']}</div>
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
@@ -57,18 +67,18 @@ HEREDOC;
                     <div class="input-group" id="answerbar">
                         <div class="input-group-prepend">
                             <div class="input-group-text">
-                                <input class="text-primary" onClick="stopInputTime()" id="notimer" type="button" value="{$this->get_option_values['wmq_timer_text']}" />
+                                <input class="text-primary" onClick="stopInputTime()" id="notimer" type="button" value="{$this->options['wmq_timer_text']}" />
                             </div>
                             <div class="input-group-text">
                                 <div style="color: red" id="timer"></div>
                             </div>
                         </div>
                         <span id="starttyping">
-                            <input class="form-control" onkeyup="calc1()" data-correct="{$this->get_option_values['wmq_correct_answer']}" data-allanswer="{$this->get_option_values['wmq_all_answer']}" placeholder="type answers here" autofocus type="text" autocomplete="off" id="guess" name="guess" />
+                            <input class="form-control" onkeyup="calc1()" data-correct="{$this->options['wmq_correct_answer']}" data-allanswer="{$this->options['wmq_all_answer']}" placeholder="type answers here" autofocus type="text" autocomplete="off" id="guess" name="guess" />
                         </span>
                         <div class="input-group-append">
-                            <input onClick="showallanswers()" class="btn btn-danger" id="showanswersbutton" type="button" value="{$this->get_option_values['wmq_give_up_title']}" style="margin-left: 10px" />
-                            <input style="display: none" onClick="reloadedpage()" id="reloadpage" type="button" class="btn btn-primary" value="{$this->get_option_values['wmq_try_again_title']}" style="margin-left: 10px" />
+                            <input onClick="showallanswers()" class="btn btn-danger" id="showanswersbutton" type="button" value="{$this->options['wmq_give_up_title']}" style="margin-left: 10px" />
+                            <input style="display: none" onClick="reloadedpage()" id="reloadpage" type="button" class="btn btn-primary" value="{$this->options['wmq_try_again_title']}" style="margin-left: 10px" />
                         </div>
                     </div>
                 </div>
@@ -80,7 +90,7 @@ HEREDOC;
 <div id="score" class="bg-light"></div>
 
 
-<input type="hidden" id="quiztime" value="{$this->get_option_values['quiz_time']}" />
+<input type="hidden" id="quiztime" value="{$this->options['quiz_time']}" />
 <input type="hidden" id="worldmapquiz" name="worldmapquiz" value="yes" />
 <br />
 HEREDOC;
@@ -96,16 +106,16 @@ HEREDOC;
 <table class="text-center mx-auto">
     <tr>
         <td>
-            <div id="mapWrapper" data-backgroundColor="{$this->get_option_values['world_bg_color']}" data-country={$this->get_option_values['country_color']} data-hover="{$this->get_option_values['hover_country_color']}" data-score="{$this->get_option_values['score_country_color']}" style="
+            <div id="mapWrapper" data-backgroundColor="{$this->options['world_bg_color']}" data-country={$this->options['country_color']} data-hover="{$this->options['hover_country_color']}" data-score="{$this->options['score_country_color']}" style="
             text-align: center;
             position: relative;
-            width: {$this->get_option_values['map_width']}px;
-            height: {$this->get_option_values['map_height']}px;
+            width: {$this->options['map_width']}px;
+            height: {$this->options['map_height']}px;
           ">
                 <div id="points" style="z-index: 2; position: relative">
                     <!-- <div id="ANDORRA"class="p"style="top:30px;left:120px;">&nbsp</div> -->
                 </div>
-                <div id="map" style="width: {$this->get_option_values['map_width']}px; height: {$this->get_option_values['map_height']}px"></div>
+                <div id="map" style="width: {$this->options['map_width']}px; height: {$this->options['map_height']}px"></div>
             </div>
         </td>
     </tr>
