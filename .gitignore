@@ -1,5 +1,5 @@
 vendor/bin/
-vendor/squizlabs*
+vendor/squizlabs
 vendor/composer.installed.json
 vendor/composer.installed.php
 
