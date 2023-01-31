@@ -1,42 +1,45 @@
 (function ($) {
-  const bakckgroundcolor = $("#mapWrapper").attr("data-backgroundColor");
-  const countryColor = $("#mapWrapper").attr("data-country");
-  const hoverColor = $("#mapWrapper").attr("data-hover");
-  const scoreColor = $("#mapWrapper").attr("data-score");
-  $(function () {
-    map = new jvm.WorldMap({
-      map: "world_mill",
-      container: $("#map"),
-      zoomOnScroll: false,
-      regionStyle: {
-        initial: {
-          stroke: "black",
-          "stroke-width": 0.2,
-          fill: countryColor,
-        },
-        hover: {
-          fill: hoverColor,
-          "fill-opacity": 1,
-        },
-        selected: {
-          fill: scoreColor,
-        },
-      },
-      backgroundColor: bakckgroundcolor,
-      values: null,
-      scale: ["#C8EEFF", "#0071A4"],
-      series: {
-        regions: [
-          {
-            attribute: "fill",
+  $(document).ready(function () {
+    const backgroundcolor = $("#mapWrapper").attr("data-backgroundColor");
+    const countryColor = $("#mapWrapper").attr("data-country");
+    const hoverColor = $("#mapWrapper").attr("data-hover");
+    const scoreColor = $("#mapWrapper").attr("data-score");
+    $(function () {
+      map = new jvm.WorldMap({
+        map: "world_mill",
+        container: $("#map"),
+        zoomOnScroll: false,
+        regionStyle: {
+          initial: {
+            stroke: "black",
+            "stroke-width": 0.2,
+            fill: countryColor,
           },
-        ],
-      },
+          hover: {
+            fill: hoverColor,
+            "fill-opacity": 1,
+          },
+          selected: {
+            fill: scoreColor,
+          },
+        },
+        backgroundColor: backgroundcolor,
+        values: null,
+        scale: ["#C8EEFF", "#0071A4"],
+        series: {
+          regions: [
+            {
+              attribute: "fill",
+            },
+          ],
+        },
+      });
     });
   });
 
   function generateColors(elements) {
     color = {};
+    const scoreColor = document.querySelector("#mapWrapper").dataset.score;
     const element = elements.toUpperCase();
     color[element] = scoreColor;
     return color;
@@ -74,11 +77,6 @@
       mapObject.setSelectedRegions(generateColors(code));
     } else {
       mapObject.series.regions[0].setValues(generateColors(code));
-      // console.log(mapObject.series.regions[0]);
-      // console.log(code);
-
-      // console.log(mapObject.series.regions[0]);
-      // // map.regions[code].element.config.style.selected.fill = "#333333";
     }
   }
 
@@ -88,6 +86,64 @@
     $("#" + name).css("border-color", scoreColor);
   }
 
+  /**
+   * Calculation of the values
+   */
+  calc1 = function () {
+    document.getElementById("guess").placeholder = "";
+    //value is 196 so, guesses=196
+    var guesses = document.form1.numberguesses.value;
+    var scorevalue = document.getElementById("score");
+    for (i = 1; i <= guesses; i++) {
+      var guess = document
+        .getElementById("guess")
+        .value.toLowerCase()
+        .replace(/[^\w\s]/gi, "")
+        .replace(/\s/g, "");
+      var answer = document
+        .getElementById("answer" + i)
+        .value.toLowerCase()
+        .replace(/[^\w\s]/gi, "")
+        .replace(/\s/g, "");
+      //196 country name is in answer
+      if (guess != "" && guess == answer) {
+        // if (document.getElementById("mapquiz")) {
+        //   tryGuess();
+        // }
+        if (document.getElementById("worldmapquiz")) {
+          //it will go for country validation and do necessary adjustment if the country value is correct
+          tryWorldGuess(answer);
+        }
+        //alert(answer);
+
+        correctanswer[i] = "correct";
+        //for starting with blank
+        document.getElementById("show" + i).style.display = "";
+        //correct Answer got blue
+        document.getElementById("show" + i).style.color = "blue";
+        document.getElementById("guess" + i).style.display = "none";
+
+        document.getElementById("guess").value = "";
+        document
+          .getElementById("showanswersbutton")
+          .addEventListener("click", function () {
+            score = 0;
+          });
+        score += 1;
+        scorevalue.innerHTML = "Score: " + score + "/" + guesses;
+      } else {
+      }
+      console.log(score);
+      //if anyone can make all the answers correct
+      if (score == guesses) {
+        document.getElementById("reloadpage").style.display = "";
+        document.getElementById("starttyping").style.display = "none";
+        document.getElementById("guess").style.display = "none";
+        document.getElementById("showanswersbutton").style.display = "none";
+        stopTimer = 1;
+      }
+    }
+  };
   function tryWorldGuess(guess) {
     //var guess = $('#guess').val();
     if (guess.length >= 2) {
@@ -105,60 +161,9 @@
       }
     }
   }
+
   var correctanswer = new Array();
   var score = 0;
-  calc1 = function () {
-    document.getElementById("guess").placeholder = "";
-    //value is 196 so, guesses=196
-    var guesses = document.form1.numberguesses.value;
-    for (i = 1; i <= guesses; i++) {
-      var guess = document
-        .getElementById("guess")
-        .value.toLowerCase()
-        .replace(/[^\w\s]/gi, "")
-        .replace(/\s/g, "");
-      var answer = document
-        .getElementById("answer" + i)
-        .value.toLowerCase()
-        .replace(/[^\w\s]/gi, "")
-        .replace(/\s/g, "");
-      //196 country name is in answer
-
-      if (guess != "" && guess == answer) {
-        // if (document.getElementById("mapquiz")) {
-        //   tryGuess();
-        // }
-        if (document.getElementById("worldmapquiz")) {
-          //it will go for country validation and do necessary adjustment if the country value is correct
-          tryWorldGuess(answer);
-        }
-        var AnswerColor = document.querySelector('.form-control');
-        var correctAnswerColor = AnswerColor.dataset.correct;
-
-        correctanswer[i] = "correct";
-        //for starting with blank
-        document.getElementById("show" + i).style.display = "";
-        //correct Answer got blue
-        document.getElementById("show" + i).style.color = correctAnswerColor;
-        document.getElementById("guess" + i).style.display = "none";
-
-        document.getElementById("guess").value = "";
-        score += 1;
-        document.getElementById("score").innerHTML =
-          "Score: " + score + "/" + guesses;
-      } else {
-      }
-
-      //if anyone can make all the answers correct
-      if (score == guesses) {
-        document.getElementById("reloadpage").style.display = "";
-        document.getElementById("starttyping").style.display = "none";
-        document.getElementById("guess").style.display = "none";
-        document.getElementById("showanswersbutton").style.display = "none";
-        stopTimer = 1;
-      }
-    }
-  };
   function highlightSpecialCases(code) {
     switch (code) {
       case "CY":

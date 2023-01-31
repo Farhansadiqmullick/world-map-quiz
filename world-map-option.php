@@ -5,364 +5,236 @@ Plugin URI:
 Description: World Map Quiz
 Version: 1.0
 Author: WPPOOL
-Author URI: 
 License: GPLv2 or later
 Text Domain: wmq
 Domain Path: /languages/
 */
 
-if (!defined('ABSPATH')) {
-    exit;
+namespace WMQ;
+
+if ( ! defined('ABSPATH') ) {
+	exit;
 }
 
-use WMQ\src\QUIZ;
+use WMQ\src\Quiz;
 use WMQ\src\Helpers;
+use WMQ\src\Option_Set;
 
 require_once dirname(__FILE__) . '/vendor/autoload.php';
+/**
+ * Main Class Component
+ */
+class WorldMapQuiz {
+	/**
+	 * Variables for table values
 
-class WORLD_MAP_QUIZ
-{
-    protected $tabvalues;
-    protected $getOptionvalues;
-    protected $getKeys;
+	 * @var string $tabvalues
+	 */
+	protected $tabvalues;
+	/**
+	 * Variables for getting option values
 
-    public function __construct()
-    {
-        add_action('admin_menu', array($this, 'wmq_create_settings'));
-        add_action('wp_enqueue_scripts', array($this, 'wmq_frontend_assets'));
-        add_action('admin_enqueue_scripts', array($this, 'wmq_admin_assets'));
-        add_action('wp_ajax_wmq_quiz', array($this, 'wmq_get_options_value'));
-        add_action('plugins_loaded', array($this, 'wmq_bootstrap'));
-        register_deactivation_hook(__FILE__, array($this, 'wmq_deactivation'));
-        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'wmq_settngs_link'));
+	 * @var string $get_optionvalues
+	 */
+	protected $get_optionvalues;
+	/**
+	 * Variables for getting the keys
 
-        //page templates
-        add_filter('theme_page_templates', array($this, 'wmq_page_template_to_dropdown'));
-        add_filter('template_include', array($this, 'wmq_change_page_template'), 99);
-        $this->tabvalues = ['content', 'color', 'others'];
-        $this->getOptionvalues = get_option('wmq_get_values');
-        $this->getKeys = 8;
-    }
+	 * @var string $get_keys
+	 */
+	protected $get_keys;
 
-    public function wmq_settngs_link($links)
-    {
-        $newLink = sprintf("<a href='%s'>%s</a>", 'options-general.php?page=wmq', __('Options', 'wmq'));
-        $links[] = $newLink;
-        return $links;
-    }
+	/**
+	 * Constuctor of the class
+	 */
+	public function __construct() {
+		add_action('admin_menu', [ $this, 'wmq_create_settings' ]);
+		add_action('wp_enqueue_scripts', [ $this, 'wmq_frontend_assets' ]);
+		add_action('admin_enqueue_scripts', [ $this, 'wmq_admin_assets' ]);
+		add_action('wp_ajax_wmq_quiz', [ $this, 'wmq_getoption_value' ]);
+		add_action('plugins_loaded', [ $this, 'wmq_bootstrap' ]);
+		register_deactivation_hook(__FILE__, [ $this, 'wmq_deactivation' ]);
+		add_filter('plugin_action_links_' . plugin_basename(__FILE__), [ $this, 'wmq_settings_link' ]);
 
-    function wmq_bootstrap()
-    {
-        global $options;
-        if (!defined('WMQ_DIR_PATH')) {
-            define('WMQ_DIR_PATH', plugin_dir_path(__FILE__));
-        }
-        if (!defined('WMQ_DIR_URL')) {
-            define('WMQ_DIR_URL', plugin_dir_url(__FILE__));
-        }
-        load_plugin_textdomain('wmq', false,  WMQ_DIR_PATH . "/languages");
+		/**
+		 * Function of the Page Templates
+		 *
+		 * @function return the page template design
+		 */
+		add_filter('theme_page_templates', [ $this, 'wmq_page_template_dropdown' ]);
+		add_filter('template_include', [ $this, 'wmq_change_page_template' ], 99);
+		$this->tabvalues        = [ 'content', 'color', 'others' ];
+		$this->get_optionvalues = get_option('wmq_get_values');
+		$this->get_keys         = 8;
+	}
 
-        if (get_option('wmq_get_values') == '') {
-            add_option('wmq_get_values');
-        }
-    }
+	/**
+	 * Counts the number of items in the provided array.
+	 *
+	 * @param string $links return the admin slug.
+	 */
+	public function wmq_settings_link( $links ) {
+		$new_link = sprintf("<a href='%s'>%s</a>", 'options-general.php?page=wmq', __('Options', 'wmq'));
+		$links[]  = $new_link;
+		return $links;
+	}
+	/**
+	 * Bootstapping the values
+	 */
+	public function wmq_bootstrap() {
+		global $options;
+		if ( ! defined('WMQ_DIR_PATH') ) {
+			define('WMQ_DIR_PATH', plugin_dir_path(__FILE__));
+		}
+		if ( ! defined('WMQ_DIR_URL') ) {
+			define('WMQ_DIR_URL', plugin_dir_url(__FILE__));
+		}
+		load_plugin_textdomain('wmq', false, WMQ_DIR_PATH . '/languages');
 
-    function wmq_deactivation()
-    {
-        delete_option('wmq_get_values');
-    }
+		if ( get_option('wmq_get_values') === '' ) {
+			add_option('wmq_get_values');
+		}
+	}
+	/**
+	 * Delete the values upon deactivation
+	 */
+	public function wmq_deactivation() {
+		delete_option('wmq_get_values');
+	}
 
+	/**
+	 * Enqueue the frontend assets
+	 */
+	public function wmq_frontend_assets() {
 
-    function wmq_frontend_assets()
-    {
-        wp_enqueue_style('bootstrap-css', '//cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', '', null);
-        wp_enqueue_style('jevctormap-css', WMQ_DIR_URL . 'assets/css/frontend/jvectormap.css', '', rand(111, 999), 'all');
-        wp_enqueue_style('wmq-frontend-css', WMQ_DIR_URL . 'assets/css/frontend/style.css', '', rand(111, 999), 'all');
-        wp_enqueue_style('wmq-admin-css', WMQ_DIR_URL . 'assets/css/admin/admin.css', '', rand(111, 999), 'all');
-        wp_enqueue_script('jvectormap-jquery', WMQ_DIR_URL . 'assets/js/jquery-jvectormap-1.1.1.min.js', ['jquery'], null, true);
-        wp_enqueue_script('jvectormap-world-mill', WMQ_DIR_URL . 'assets/js/jquery-jvectormap-world-mill.js', ['jquery'], null, true);
-        wp_enqueue_script('wmq-world-map', WMQ_DIR_URL . 'assets/js/wmq-world-map.js', ['jquery'], null, true);
-        wp_enqueue_script('wmq-quiz', WMQ_DIR_URL . 'assets/js/quiz.js', rand(111, 999), null, true);
-    }
-    function wmq_admin_assets($hook)
-    {
-        if ('toplevel_page_wmq' == $hook) {
-            wp_enqueue_style('bootstrap-css', '//cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', '', null);
-            wp_enqueue_style('wmq-admin-css', WMQ_DIR_URL . 'assets/css/admin/admin.css', '', rand(111, 999), 'all');
-            wp_enqueue_script('poppper-js', '//cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js', ['jquery'], null, true);
-            wp_enqueue_script('bootstrap-js', '//cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js', ['jquery'], null, true);
-            wp_enqueue_script('swal-js', '//cdn.jsdelivr.net/npm/sweetalert2@11', ['jquery'], null, true);
-            wp_enqueue_script('wmq-admin-quiz', WMQ_DIR_URL . 'assets/js/admin/admin.js', ['jquery'], rand(111, 999), true);
-            $wmq_nonce = wp_create_nonce('wmq_quiz_nonce');
-            $ajax_url = admin_url('admin-ajax.php');
-            wp_localize_script('wmq-admin-quiz', 'wmq_quiz_option', array(
-                'ajax_url' => $ajax_url,
-                'nonce' => $wmq_nonce
-            ));
-        }
-    }
+		wp_enqueue_style('bootstrap-css', '//cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', '', null);
+		wp_enqueue_style('jevctormap-css', WMQ_DIR_URL . 'assets/css/frontend/jvectormap.css', '', wp_rand(111, 999), 'all');
+		wp_enqueue_style('wmq-frontend-css', WMQ_DIR_URL . 'assets/css/frontend/style.css', '', wp_rand(111, 999), 'all');
+		wp_enqueue_style('wmq-admin-css', WMQ_DIR_URL . 'assets/css/admin/admin.css', '', wp_rand(111, 999), 'all');
+		wp_enqueue_script('jvectormap-jquery', WMQ_DIR_URL . 'assets/js/jquery-jvectormap-1.1.1.min.js', [ 'jquery' ], null, false);
+		wp_enqueue_script('jvectormap-world-mill', WMQ_DIR_URL . 'assets/js/jquery-jvectormap-world-mill.js', [ 'jquery' ], null, false);
+		wp_enqueue_script('wmq-world-map', WMQ_DIR_URL . 'assets/js/wmq-world-map.js', [ 'jquery' ], wp_rand(111, 999), false);
+		wp_enqueue_script('wmq-quiz', WMQ_DIR_URL . 'assets/js/quiz.js', [ 'jquery' ], wp_rand(111, 999), false);
+	}
+	/**
+	 * Enqueue the admin assets
+	 *
+	 * @param string $hook return the specific admin slug.
+	 */
+	public function wmq_admin_assets( $hook ) {
+		if ( 'toplevel_page_wmq' === $hook ) {
+			wp_enqueue_style('bootstrap-css', '//cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', '', null);
+			wp_enqueue_style('wmq-admin-css', WMQ_DIR_URL . 'assets/css/admin/admin.css', '', wp_rand(111, 999), 'all');
+			wp_enqueue_script('poppper-js', '//cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js', [ 'jquery' ], null, true);
+			wp_enqueue_script('bootstrap-js', '//cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js', [ 'jquery' ], null, true);
+			wp_enqueue_script('swal-js', '//cdn.jsdelivr.net/npm/sweetalert2@11', [ 'jquery' ], null, true);
+			wp_enqueue_script('wmq-admin-quiz', WMQ_DIR_URL . 'assets/js/admin/admin.js', [ 'jquery' ], wp_rand(111, 999), true);
+			$wmq_nonce = wp_create_nonce('wmq_quiz_nonce');
+			$ajax_url  = admin_url('admin-ajax.php');
+			wp_localize_script('wmq-admin-quiz', 'wmq_quiz_option', [
+				'ajax_url' => $ajax_url,
+				'nonce'    => $wmq_nonce,
+			]);
+		}
+	}
 
-    function wmq_create_settings()
-    {
-        $page_title = __('World Map Quiz', 'wmq');
-        $menu_title = __('World Map Quiz', 'wmq');
-        $capability = 'manage_options';
-        $slug = 'wmq';
-        $callback = array($this, 'wmq_settings_content');
-        $icon = WMQ_DIR_URL.'images/world_map.png';
+	/**
+	 * Option Page Settings
+	 */
+	public function wmq_create_settings() {
+		$page_title = __('World Map Quiz', 'wmq');
+		$menu_title = __('World Map Quiz', 'wmq');
+		$capability = 'manage_options';
+		$slug       = 'wmq';
+		$callback   = [ $this, 'wmq_settings_content' ];
+		$icon       = WMQ_DIR_URL . 'images/world_map.png';
 
-        add_menu_page($page_title, $menu_title, $capability, $slug, $callback, $icon);
-    }
+		add_menu_page($page_title, $menu_title, $capability, $slug, $callback, $icon);
+	}
 
+	/**
+	 * Get Option Values
+	 */
+	public function wmq_getoption_value() {
+		$wmq_nonce_verify = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+		if ( wp_verify_nonce($wmq_nonce_verify, 'wmq_quiz_nonce') ) {
+			$sanitize_val = new Helpers();
+			//phpcs:ignore
+			$values    = isset($_POST['task']) ? wp_kses_allowed_html($_POST['task']) : '';
+			$get_key   = [];
+			$get_value = [];
+			foreach ( $values as $value ) {
+				$get_key[]   = sanitize_text_field($value['name']);
+				$get_value[] = sanitize_text_field($value['value']);
+			}
+			$get_value_array = array_combine($get_key, $get_value);
+			update_option('wmq_get_values', $get_value_array);
+			die();
+		} else {
+			return false;
+		}
+	}
 
-    function wmq_get_options_value()
-    {
-        $wmq_nonce_verify = isset($_POST['nonce']) ? $_POST['nonce'] : '';
-        if (wp_verify_nonce($wmq_nonce_verify, 'wmq_quiz_nonce')) {
-            $values = isset($_POST['task']) ? $_POST['task'] : '';
-            $getKey = [];
-            $getValue = [];
-            foreach ($values as $value) {
-                $getKey[] = $value['name'];
-                $getValue[] = $value['value'];
-            }
-            $getvalueArray = array_combine($getKey, $getValue);
-            update_option('wmq_get_values', $getvalueArray);
+	/**
+	 * Default Settings of the Plugin
+	 */
+	public function wmq_settings_content() {
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e('World Map Quiz Option', 'wmq'); ?></h1>
+			<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+				<?php
+				foreach ( $this->tabvalues as $key => $tab ) {
+					printf('<li class="nav-item" role="presentation">
+                            <button class="nav-link %s" id="pills-%s-tab" data-bs-toggle="pill" 
+                            data-bs-target="#pills-%s" type="button" role="tab" aria-controls="pills-%s" 
+                            aria-selected="true">%s</button>
+                        </li>', esc_attr($key) === 0 ? 'active' : '', esc_attr($tab), esc_attr($tab), esc_attr($tab), esc_attr(ucwords($tab)));
+				}
+				?>
+			</ul>
+			<form action="options.php" id="wmq-quiz-form" method="post">
+				<div class="tab-content" id="pills-tabContent">
+					<?php
+					$get_option_values = new Option_Set();
+					$get_option_values->get_options($this->get_optionvalues, $this->get_keys, $this->tabvalues);
+					?>
+					<input type="submit" name="wmq_get_values" id="wmq-submit" class="btn btn-primary" value="Save">
+				</div>
+			</form>
+			<div class="wmq-get-data"></div>
+		</div>
+		<?php
 
-            die();
-        } else {
-            return false;
-        }
-    }
+	}
 
-    function wmq_settings_content()
-    {
-?>
-        <div class="wrap">
-            <h1><?php _e('World Map Quiz Option', 'wmq'); ?></h1>
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <?php foreach ($this->tabvalues as $key => $tab) {
-                    printf('<li class="nav-item" role="presentation">
-                            <button class="nav-link %s" id="pills-%s-tab" data-bs-toggle="pill" data-bs-target="#pills-%s" type="button" role="tab" aria-controls="pills-%s" aria-selected="true">%s</button>
-                        </li>', $key == 0 ? 'active' : '', $tab, $tab, $tab, ucwords($tab));
-                }
-                ?>
-            </ul>
-            <form action="options.php" id="wmq-quiz-form" method="post">
-                <div class="tab-content" id="pills-tabContent">
-                    <?php $this->getOptions($this->getOptionvalues, $this->getKeys, $this->tabvalues); ?>
-                    <input type="submit" name="wmq_get_values" id="wmq-submit" class="btn btn-primary" value="Save">
-                </div>
-            </form>
-            <div class="wmq-get-data"></div>
-        </div>
-<?php
-    }
+	/**
+	 * Admin Template dropdown Item
+	 *
+	 * @param string $templates return the specific admin slug.
+	 */
+	public function wmq_page_template_dropdown( $templates ) {
+		$wmq_template                   = [];
+		$wmq_template['world-map-quiz'] = __('World Map Template', 'wmq');
+		$templates                      = array_merge($templates, $wmq_template);
+		return $templates;
+	}
 
-    function getOptions($values, $number, $wrapper)
-    {
-
-
-        $fields = array(
-            array(
-                'label'       => __('Heading', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'heading',
-                'placeholder' => __('Heading Title', 'wmq'),
-                'task'     => 'heading',
-                'id'          => 'wmq_heading',
-                'value' => isset($values['heading']) ? $values['heading'] : 'Heading Title of the World Map',
-            ),
-            array(
-                'label'       => __('Sub Heading', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'subheading',
-                'placeholder' => __('Sub Heading ', 'wmq'),
-                'task'     => 'subheading',
-                'id'          => 'wmq_subheading',
-                'value' => isset($values['subheading']) ? $values['subheading'] : 'Sub Heading of the World Map',
-            ),
-            array(
-                'label'       => __('Quiz Time', 'wmq'),
-                'type'        => 'number',
-                'name'     => 'quiz_time',
-                'placeholder' => '720',
-                'task'     => 'quiz_time',
-                'id'          => 'wmq_quiz_time',
-                'value' => isset($values['quiz_time']) ? $values['quiz_time'] : '',
-            ),
-            array(
-                'label'       => __('Header Nav Title', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'header_nav_title',
-                'placeholder' => 'World Map',
-                'task'     => 'header_nav_title',
-                'id'          => 'wmq_header_nav_title',
-                'value' => isset($values['header_nav_title']) ? $values['header_nav_title'] : '',
-            ),
-            array(
-                'label'       => __('Header Span Title', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'header_span_title',
-                'placeholder' => 'Quiz',
-                'task'     => 'header_span_title',
-                'id'          => 'wmq_header_span_title',
-                'value' => isset($values['header_span_title']) ? $values['header_span_title'] : '',
-            ), array(
-                'label'       => __('Unlimited Timer Text', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'wmq_timer_text',
-                'placeholder' => 'Timer!!',
-                'task'     => 'wmq_timer_text',
-                'id'          => 'wmq_timer_text',
-                'value' => isset($values['wmq_timer_text']) ? $values['wmq_timer_text'] : "",
-            ), array(
-                'label'       => __('Give Up Title', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'wmq_give_up_title',
-                'placeholder' => 'Give Up?',
-                'task'     => 'wmq_give_up_title',
-                'id'          => 'wmq_give_up_title',
-                'value' => isset($values['wmq_give_up_title']) ? $values['wmq_give_up_title'] : '',
-            ), array(
-                'label'       => __('Try Again Title', 'wmq'),
-                'type'        => 'text',
-                'name'     => 'wmq_try_again_title',
-                'placeholder' => 'Try Again',
-                'task'     => 'wmq_try_again_title',
-                'id'          => 'wmq_try_again_title',
-                'value' => isset($values['wmq_try_again_title']) ? $values['wmq_try_again_title'] : '',
-            ),
-            array(
-                'label'       => __('Header Span Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'header_span_color',
-                'task'     => 'header_span_color',
-                'id'          => 'wmq_header_span_color',
-                'value' => isset($values['header_span_color']) ? $values['header_span_color'] : '#95d1b1',
-            ),
-            array(
-                'label'       => __('Map Width', 'wmq'),
-                'type'        => 'number',
-                'name'     => 'map_width',
-                'placeholder'     => '950',
-                'task'     => 'map_width',
-                'id'          => 'wmq_map_width',
-                'value' => isset($values['map_width']) ? $values['map_width'] : 950,
-            ), array(
-                'label'       => __('Map Height', 'wmq'),
-                'type'        => 'number',
-                'name'     => 'map_height',
-                'placeholder'     => '450',
-                'task'     => 'map_height',
-                'id'          => 'wmq_map_height',
-                'value' => isset($values['map_height']) ? $values['map_height'] : 450,
-            ), array(
-                'label'       => __('World BG Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'world_bg_color',
-                'task'     => 'world_bg_color',
-                'id'          => 'world_bg_color',
-                'value' => isset($values['world_bg_color']) ? $values['world_bg_color'] : '#809fff',
-            ), array(
-                'label'       => __('Nav Background Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'nav_background_color',
-                'task'     => 'nav_background_color',
-                'id'          => 'wmq_nav_background_color',
-                'value' => isset($values['nav_background_color']) ? $values['nav_background_color'] : '#1e4068',
-            ), array(
-                'label'       => __('Country Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'country_color',
-                'task'     => 'country_color',
-                'id'          => 'country_color',
-                'value' => isset($values['country_color']) ? $values['country_color'] : '#ffffff',
-            ), array(
-                'label'       => __('Score Country Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'score_country_color',
-                'task'     => 'score_country_color',
-                'id'          => 'score_country_color',
-                'value' => isset($values['score_country_color']) ? $values['score_country_color'] : '#ffff00',
-            ), array(
-                'label'       => __('Hover Country Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'hover_country_color',
-                'task'     => 'hover_country_color',
-                'id'          => 'hover_country_color',
-                'value' => isset($values['hover_country_color']) ? $values['hover_country_color'] : '#dedede',
-            ),
-            array(
-                'label'       => __('All Answer Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'wmq_all_answer',
-                'task'     => 'wmq_all_answer',
-                'id'          => 'wmq_all_answer',
-                'value' => isset($values['wmq_all_answer']) ? $values['wmq_all_answer'] : '#f44336',
-            ),
-            array(
-                'label'       => __('Correct Answer Color', 'wmq'),
-                'type'        => 'color',
-                'name'     => 'wmq_correct_answer',
-                'task'     => 'wmq_correct_answer',
-                'id'          => 'wmq_correct_answer',
-                'value' => isset($values['wmq_correct_answer']) ? $values['wmq_correct_answer'] : '#0000ff',
-            ),
-        );
-
-        if (count($fields) > $number) {
-            $helpers = new Helpers();
-            $first_array = array_chunk($fields, $number);
-            if ($first_array[0]) {
-                $content = '';
-                printf('<div class="tab-pane fade show active" id="pills-%s" role="tabpanel" aria-labelledby="pills-%s-tab">', $wrapper[0], $wrapper[0]);
-                foreach ($first_array[0] as $field) {
-                    $content .= sprintf('%s', $helpers->input_switch($field));
-                }
-                printf('%s', '</div>');
-            }
-            if ($first_array[1]) {
-                printf('<div class="tab-pane fade" id="pills-%s" role="tabpanel" aria-labelledby="pills-%s-tab">', $wrapper[1], $wrapper[1]);
-                foreach ($first_array[1] as $field) {
-                    $content .= sprintf('%s', $helpers->input_switch($field));
-                }
-                printf('%s', '</div>');
-            }
-            if ($first_array[2]) {
-                printf('<div class="tab-pane fade" id="pills-%s" role="tabpanel" aria-labelledby="pills-%s-tab">', $wrapper[2], $wrapper[2]);
-                foreach ($first_array[2] as $field) {
-                    $content .= sprintf('%s', $helpers->input_switch($field));
-                }
-                printf('%s', '</div>');
-            }
-        } else {
-            return false;
-        }
-    }
-
-
-    function wmq_page_template_to_dropdown($templates)
-    {
-        $wmp_template = [];
-        $wmp_template['quiz'] = __('World Map Template', 'wmp');
-
-        $templates = array_merge($templates, $wmp_template);
-        return $templates;
-    }
-
-    function wmq_change_page_template($template)
-    {
-        if (is_page()) {
-            global $post;
-            $meta = get_post_meta($post->ID);
-            if (!empty($meta['_wp_page_template'][0]) && $meta['_wp_page_template'][0] != $template) {
-                $quiz = new QUIZ;
-                $template = $quiz->quiz_init();
-            }
-        }
-        return $template;
-    }
+	/**
+	 * Admin Page Change Template
+	 *
+	 * @param string $template return all the template value.
+	 */
+	public function wmq_change_page_template( $template ) {
+		if ( is_page() ) {
+			global $post;
+			$meta = get_post_meta($post->ID);
+			if ( ! empty($meta['_wp_page_template'][0]) && $meta['_wp_page_template'][0] !== $template ) {
+				$quiz     = new Quiz();
+				$template = $quiz->quiz_init();
+			}
+		}
+		return $template;
+	}
 }
-
-new WORLD_MAP_QUIZ();
+new WorldMapQuiz();

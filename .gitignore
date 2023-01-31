@@ -1,0 +1,12 @@
+vendor/bin/
+vendor/squizlabs
+vendor/composer.installed.json
+vendor/composer.installed.php
+
+wp-coding-standards/
+
+*.zip
+
+composer.lock
+
+*.vscode

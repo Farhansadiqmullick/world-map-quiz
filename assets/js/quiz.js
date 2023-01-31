@@ -3,7 +3,6 @@
     // document.getElementById("guess").focus();
     startingtimer();
     calc1();
-
     $(window).keydown(function (event) {
       if (event.keyCode == 13) {
         event.preventDefault();
@@ -24,7 +23,9 @@
 
   function startingtimer() {
     var guesses = document.form1.numberguesses.value;
-    document.getElementById("score").innerHTML = "Score: 0/" + guesses;
+    var score = 0;
+    document.getElementById("score").innerHTML =
+      "Score: " + score + "/" + guesses;
     count = document.getElementById("quiztime").value;
 
     if (count == 0) {
@@ -74,7 +75,6 @@
 
     document.getElementById("timer").innerHTML = minutes + ":" + seconds;
   }
-
   var correctanswer = new Array();
   var score = 0;
 
